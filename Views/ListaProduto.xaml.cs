@@ -16,9 +16,19 @@ public partial class ListaProduto : ContentPage
 
     protected async override void OnAppearing()
     {
-		List<Produto> tmp = await App.Db.GetAll();
+        try
+        {
+            List<Produto> tmp = await App.Db.GetAll();
 
-		tmp.ForEach(x => lista.Add(x));
+            lista.Clear();
+            tmp.ForEach(x => lista.Add(x));
+        }
+        catch (Exception ex) 
+        {
+            await DisplayAlert("Ops", ex.Message,"OK");
+        }
+
+       
     }
 
     private void ToolbarItem_Clicked(object sender, EventArgs e)
@@ -79,6 +89,23 @@ public partial class ListaProduto : ContentPage
                     await DisplayAlert("Erro", $"Erro ao deletar produto: {ex.Message}", "OK");
                 }
             }
+        }
+    }
+
+    private  void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+        try
+        {
+            Produto p = e.SelectedItem as Produto;
+
+            Navigation.PushAsync(new Views.EditarProduto
+            {
+                BindingContext = p,
+            });
+        }
+        catch (Exception ex)
+        {
+             DisplayAlert("Erro", $"Erro ao deletar produto: {ex.Message}", "OK");
         }
     }
 }
